@@ -1,0 +1,13 @@
+Cenários para validar em teste local (não substituem eventos reais):
+Kick + Follow => Kick / Seguiu
+Kick + Seguiu => Kick / Seguiu
+Kick + Subscription => Kick / Inscreveu-se
+Kick + Resub => Kick / Reinscreveu-se
+Kick + 100 Kicks => Kick / Kicks
+Kick + 1 Kick => Kick / Kicks
+Twitch + 100 Bits => Twitch / Bits
+YouTube + Super Chat => YouTube / Super Chat
+YouTube + Jewel Gifts => YouTube / Jewel Gift
+Facebook + 500 Stars => Facebook / Estrelas
+YouTube + Follow => YouTube / Seguiu
+Kick + Raid => Kick / Raid, se recebido

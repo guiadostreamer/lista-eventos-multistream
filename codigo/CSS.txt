@@ -1,0 +1,119 @@
+/* LISTA DE EVENTOS NEON | Streamlabs Event List (nativo) | v1.0 */
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&display=swap');
+
+html, body { margin:0 !important; padding:0 !important; background:transparent !important; overflow:hidden; }
+.widget-EventList, .widget-EventList * { box-sizing:border-box; }
+.widget-EventList {
+  --neon-gap: 8px;
+  margin:0 !important; padding:12px 17px 16px !important;
+  background:transparent !important;
+  color:#f5f8ff;
+  list-style:none !important;
+  font-family:'Rajdhani', 'Arial', sans-serif;
+  font-size:22px;
+  font-weight:700;
+  text-transform:none;
+  width:100%; overflow:hidden;
+  position:relative;
+}
+.widget-EventList li {
+  --accent:#9bdcf8;
+  position:relative !important; isolation:isolate;
+  width:100%; height:48px; min-height:48px;
+  margin:0 0 var(--neon-gap) !important;
+  padding:1px !important;
+  border:0 !important;
+  border-radius:12px !important;
+  list-style:none !important;
+  overflow:visible;
+  background:linear-gradient(115deg, color-mix(in srgb,var(--accent) 70%,transparent),rgba(255,255,255,.11) 40%, color-mix(in srgb,var(--accent) 55%,transparent));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 42%,transparent),0 0 8px color-mix(in srgb,var(--accent) 32%,transparent),0 3px 16px rgba(0,0,0,.35);
+  animation:neonEnter .55s cubic-bezier(.2,.75,.15,1) both !important;
+  -webkit-animation:neonEnter .55s cubic-bezier(.2,.75,.15,1) both !important;
+  transition:filter .25s ease, opacity .3s ease;
+}
+.widget-EventList li:first-child { z-index:5; box-shadow:0 0 0 1px var(--accent),0 0 16px color-mix(in srgb,var(--accent) 50%,transparent),0 4px 22px #0006; }
+.widget-EventList li:not(:first-child) { filter:saturate(.84); }
+.widget-EventList li::before {
+  content:''; position:absolute; inset:-3px; z-index:-1; border-radius:14px;
+  background:var(--accent); opacity:0; filter:blur(12px);
+  pointer-events:none;
+}
+.widget-EventList li:first-child::before { opacity:.19; }
+.widget-EventList li::after {
+  content:''; pointer-events:none; position:absolute; inset:0; border-radius:inherit;
+  border:1px solid var(--accent); opacity:0;
+}
+.widget-EventList li:first-child::after { animation:neonPulse 2.8s ease-in-out infinite; }
+.widget-EventList li > .background {
+  position:absolute !important; inset:1px !important; width:auto !important; height:auto !important;
+  top:1px !important; left:1px !important;
+  border-radius:11px !important; opacity:1 !important;
+  background:linear-gradient(105deg,rgba(24,32,48,.95),rgba(13,20,32,.93) 58%,rgba(26,34,48,.96)) !important;
+  filter:none !important; -webkit-filter:none !important;
+  transition:none !important;
+}
+.widget-EventList li > .background::after {
+  content:''; position:absolute; inset:0; border-radius:inherit;
+  background:linear-gradient(165deg,rgba(255,255,255,.085),transparent 38%),
+  linear-gradient(110deg,transparent 10%,rgba(255,255,255,.025) 24%,transparent 37%);
+  pointer-events:none;
+}
+.widget-EventList li > .event-content {
+  position:relative !important; z-index:1; display:flex !important; flex-direction:row !important;
+  align-items:center !important; gap:8px !important;
+  padding:0 9px 0 13px !important;
+  margin:0 !important; width:100% !important; height:46px !important;
+  min-height:0 !important; opacity:1 !important;
+  font-size:1em !important; line-height:1 !important;
+  overflow:hidden !important; background:none !important;
+  animation:none !important; -webkit-animation:none !important;
+}
+.widget-EventList li > .event-content::before {
+  content:''; position:absolute; top:9px; bottom:9px; left:4px; width:3px;
+  border-radius:10px; background:var(--accent); box-shadow:0 0 8px var(--accent);
+}
+.widget-EventList .message {
+  display:block !important; position:static !important; flex:1 1 auto; min-width:0;
+  padding:0 !important; margin:0 !important;
+  overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
+  font-size:1em !important; line-height:1 !important; font-weight:700;
+  text-shadow:0 1px 2px rgba(0,0,0,.55);
+  order:0;
+}
+.widget-EventList .neon-platform {
+  display:flex; align-items:center; justify-content:center; gap:4px;
+  flex:0 0 auto; height:26px; max-width:85px; padding:0 7px;
+  border-radius:7px; border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);
+  background:color-mix(in srgb,var(--accent) 12%,#0d1521);
+  color:var(--accent); font:700 12px/1 'Rajdhani',sans-serif;
+  letter-spacing:.15px; order:1;
+}
+.widget-EventList .neon-platform svg { width:14px; height:14px; flex:none; fill:currentColor; }
+.widget-EventList .neon-platform.neon-platform-unknown { font-size:11px; }
+.widget-EventList .neon-action-icon {
+  display:flex; align-items:center; justify-content:center; flex:0 0 27px;
+  width:27px; height:27px; border-radius:50%; order:2;
+  background:color-mix(in srgb,var(--accent) 22%,#11192a);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 68%,transparent),0 0 9px color-mix(in srgb,var(--accent) 38%,transparent);
+  color:var(--accent);
+}
+.widget-EventList .neon-action-icon svg { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.widget-EventList .tag {
+  display:flex !important; position:static !important; order:3;
+  align-items:center; justify-content:center; flex:0 0 auto;
+  max-width:47%; min-width:62px; height:29px; margin:0 !important;
+  padding:0 10px !important; border-radius:7px;
+  background:linear-gradient(120deg,color-mix(in srgb,var(--accent) 35%,#14202e),color-mix(in srgb,var(--accent) 60%,#152134));
+  color:#fff; font:700 15px/1 'Rajdhani', sans-serif !important;
+  text-shadow:0 1px 2px #0006;
+  top:auto !important; right:auto !important;
+  overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+}
+/* O próprio Streamlabs continua gerenciando a lista e seus eventos. */
+.widget-EventList li:nth-child(n+{max_events}) { animation:neonExit .45s ease forwards !important; -webkit-animation:neonExit .45s ease forwards !important; }
+@keyframes neonEnter { from { opacity:0; transform:translateX(34px) scale(.97); } to { opacity:1; transform:translateX(0) scale(1); } }
+@keyframes neonExit { to { opacity:0; transform:translateX(-24px); } }
+@keyframes neonPulse { 0%,100% { opacity:.12; } 50% { opacity:.75; } }
+@media (prefers-reduced-motion:reduce) { .widget-EventList li,.widget-EventList li::after { animation:none !important; } }

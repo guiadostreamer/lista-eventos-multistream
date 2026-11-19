@@ -1,0 +1,149 @@
+/* LISTA DE EVENTOS NEON | Streamlabs Event List nativo | v1.0
+   Decora os <li> criados pelo Streamlabs; NAO substitui o receptor de eventos.
+   Uma plataforma so e exibida quando identificavel no DOM.
+*/
+(function () {
+  'use strict';
+  const ROOT = '.widget-EventList';
+  const ICONS = {
+    user:'<circle cx="9" cy="7" r="3"/><path d="M3 19v-2a6 6 0 0 1 12 0v2M17 8v6m-3-3h6"/>',
+    star:'<path d="m12 2 3 6 6.5 1-4.75 4.6 1.15 6.4L12 17l-5.9 3 1.15-6.4L2.5 9 9 8z"/>',
+    gem:'<path d="M6 3h12l4 6-10 12L2 9l4-6zM2 9h20M6 3l6 18L18 3"/>',
+    raid:'<circle cx="9" cy="7" r="3"/><path d="M2 20v-3a7 7 0 0 1 14 0v3M17 4a4 4 0 0 1 0 8m2 3a5 5 0 0 1 3 5"/>',
+    dollar:'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.7c-1.5-1.4-5.8-1.7-7 .3-1.9 3 6.8 2.3 6.8 5.6 0 2.6-5 3.1-7 1.1M12 5v14"/>',
+    crown:'<path d="M2 8l5 4 5-7 5 7 5-4-2 11H4L2 8z"/>',
+    gift:'<rect x="3" y="9" width="18" height="12" rx="2"/><path d="M12 9v12M2 9h20M12 9C5 9 6 3 9 3c2 0 3 3 3 6zm0 0c7 0 6-6 3-6-2 0-3 3-3 6z"/>',
+    heart:'<path d="M20.8 4.6a5.7 5.7 0 0 0-8.1 0l-.7.7-.7-.7a5.7 5.7 0 0 0-8.1 8.1 8.1 0 0 0 0 11.4L12 23l8.8-7a8.1 8.1 0 0 0 0-11.4z"/>',
+    share:'<circle cx="18" cy="5" r="3"/><circle cx="5" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8 10 7-4M8 14l7 4"/>',
+    generic:'<path d="M4 12h16M12 4v16"/>',
+    sticker:'<path d="M4 3h16v12l-6 6H4zM14 21v-6h6M8 9h8"/>'
+  };
+  const PLATFORM_ICONS = {
+    twitch:'<path d="M3 2 1 7v13h5v3h3l3-3h4l7-7V2H3zm18 10-4 4h-6l-3 3v-3H4V4h17v8zM10 7h2v6h-2zm6 0h2v6h-2z"/>',
+    youtube:'<path d="M22 7.5a3 3 0 0 0-2.1-2.1C18 5 12 5 12 5s-6 0-7.9.4A3 3 0 0 0 2 7.5 31 31 0 0 0 2 16.5a3 3 0 0 0 2.1 2.1C6 19 12 19 12 19s6 0 7.9-.4a3 3 0 0 0 2.1-2.1 31 31 0 0 0 0-9zM10 15V9l6 3z"/>',
+    kick:'<path d="M2 2h6v7h3V6h4V2h7v7h-4v6h4v7h-7v-4h-4v-4H8v8H2z"/>',
+    facebook:'<path d="M14 22v-9h3l.5-4H14V7c0-1 .3-1.5 1.7-1.5H18V2.1A26 26 0 0 0 14.7 2C11.6 2 9.5 3.9 9.5 7.3V9H7v4h2.5v9z"/>'
+  };
+  const COLORS = {twitch:'#b58cff',youtube:'#ff6969',kick:'#68f476',facebook:'#69b5ff',unknown:'#8ad5ff'};
+  function norm(text){return String(text||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
+  // Ações exclusivas vencem pistas genéricas de plataforma.
+  // Exemplo: classe "youtube" + tag "100 Kicks" => Kick.
+  // NUNCA inferir a origem de Follow, Sub ou Raid sem pista explícita.
+  function findPlatform(eventType, tag, source) {
+    const type=norm(eventType), label=norm(tag), origin=norm(source);
+    const exclusive=function(t){
+      if(/\bkicks\b|\b\d[\d.,]*\s+kick\b/.test(t))return 'kick';
+      if(/\bbits?\b|\bcheer(?:ed|ing)?\b/.test(t))return 'twitch';
+      if(/\bjewel[ _-]?gifts?\b|\bsuper[ _-]?chats?\b|\bsuper[ _-]?stickers?\b/.test(t))return 'youtube';
+      if(/\bestrelas?\b|\bstars?\b/.test(t))return 'facebook';
+      return null;
+    };
+    const specific=exclusive(label)||exclusive(type);
+    if(specific)return specific;
+    const all=type+' '+label+' '+origin;
+    const explicit=[];
+    if(/(?:^|[^a-z0-9])twitch(?=$|[^a-z0-9])/.test(all))explicit.push('twitch');
+    if(/(?:^|[^a-z0-9])youtube(?=$|[^a-z0-9])/.test(all))explicit.push('youtube');
+    if(/(?:^|[^a-z0-9])kick(?=$|[^a-z0-9])/.test(all))explicit.push('kick');
+    if(/(?:^|[^a-z0-9])facebook(?=$|[^a-z0-9])|\bfb[ _-]gaming\b/.test(all))explicit.push('facebook');
+    return explicit.length===1?explicit[0]:'unknown';
+  }
+  function getAction(text){
+    if(/jewel[ _-]?gift/.test(text))return {id:'gift',label:'Jewel Gift'};
+    if(/super[ _-]?sticker|\bsticker\b/.test(text))return {id:'sticker',label:'Super Sticker'};
+    if(/super[ _-]?chat/.test(text))return {id:'dollar',label:'Super Chat'};
+    if(/\bbits?\b|\bcheer/.test(text))return {id:'gem',label:'Bits'};
+    if(/\bkicks\b|\b\d[\d.,]*\s+kick\b/.test(text))return {id:'gem',label:'Kicks'};
+    if(/\braids?\b|incursao/.test(text))return {id:'raid',label:'Raid'};
+    if(/power[ _-]?ups?/.test(text))return {id:'star',label:'Power-Up'};
+    if(/charity|beneficent/.test(text))return {id:'heart',label:'Doação beneficente'};
+    if(/gift|presente|gifted/.test(text))return {id:'gift',label:'Presenteou'};
+    if(/resub|reinscri|renovou|renew/.test(text))return {id:'star',label:'Reinscreveu-se'};
+    if(/member|membro|membership|assinatura de membro/.test(text))return {id:'crown',label:'Virou membro'};
+    if(/\bstars?\b|estrela/.test(text))return {id:'star',label:'Estrelas'};
+    if(/donat|doa|\btip\b|gorjeta|contribui/.test(text))return {id:'dollar',label:'Doou'};
+    if(/subscri|inscri|\bsub\b|subscription|subscribe/.test(text))return {id:'star',label:'Inscreveu-se'};
+    if(/follow|segui|seguidor/.test(text))return {id:'user',label:'Seguiu'};
+    if(/\bhost\b|hosped/.test(text))return {id:'raid',label:'Hospedou'};
+    if(/share|compartilh/.test(text))return {id:'share',label:'Compartilhou'};
+    if(/\blike\b|curti/.test(text))return {id:'heart',label:'Curtiu'};
+    return {id:'generic',label:'Evento'};
+  }
+  function translate(tag, action){
+    const source=(tag||'').trim();
+    const quantity=source.match(/(?:\b\d[\d.,]*\s*(?:bits?|kicks?|estrelas|stars)|(?:x\s*\d+)|(?:\(\s*\d[\d.,]*\s*\))|(?:R\$\s*[\d.,]+)|(?:\$\s*[\d.,]+))/i);
+    const extra=quantity?quantity[0].replace(/^\s*x\s*/i,'x').trim():'';
+    if(action.id==='generic')return source || 'Evento';
+    if(action.id==='gem' && /bits?/i.test(source))return extra ? (extra.replace(/bits?/i,'').trim()+' Bits').trim() : 'Bits';
+    if(action.id==='gem' && /kicks?/i.test(source))return extra ? (extra.replace(/kicks?/i,'').trim()+' Kicks').trim() : 'Kicks';
+    if(action.id==='raid')return action.label+(extra ? ' '+extra : '');
+    if(action.label==='Jewel Gift')return 'Jewel Gift'+(extra?' '+extra:'');
+    if(action.id==='dollar' && /super\s?chat/i.test(source))return 'Super Chat'+(extra?' '+extra:'');
+    if(action.id==='dollar' && extra)return 'Doou '+extra;
+    if(action.id==='star' && /stars?|estrelas/i.test(source))return extra ? (extra.replace(/stars?|estrelas/i,'').trim()+' Estrelas').trim():'Estrelas';
+    if(/reinscreveu/i.test(action.label) && /x\s*\d+/i.test(source))return 'Reinscrição '+extra;
+    return action.label+(extra?' '+extra:'');
+  }
+  function svg(markup,filled){return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"'+(filled?'':'')+'>'+markup+'</svg>';}
+  function decorate(li){
+    const body=li.querySelector(':scope > .event-content') || li.querySelector(':scope > div:last-child');
+    if(!body)return;
+    const tag=body.querySelector('.tag'), message=body.querySelector('.message');
+    if(!tag||!message)return;
+    const currentTag=tag.textContent.trim();
+    const rawTag=(tag.dataset.neonOutput === currentTag && tag.dataset.rawTag)
+      ? tag.dataset.rawTag : currentTag;
+    tag.dataset.rawTag=rawTag;
+    const classStr=typeof li.className==='string'?li.className:'';
+    const source=(li.getAttribute('data-platform')||'')+' '+(li.getAttribute('data-source')||'');
+    const platform=findPlatform(classStr,rawTag,source);
+    const signature=platform+'|'+classStr+'|'+rawTag+'|'+message.textContent.trim();
+    if(li.dataset.neonReady==='1' && li.dataset.neonSignature===signature)return;
+    // IMPORTANTE: a plataforma Kick NAO equivale ao evento monetario Kicks.
+    // Decidir a acao pelo rótulo nativo primeiro; só depois tentar a classe
+    // do evento, retirando tokens exclusivos da plataforma (kick, youtube etc.).
+    // Exemplo: class="kick follow" + tag="Follow" -> Seguiu, nunca Kicks.
+    function actionFromEventClass(classes) {
+      const cleaned=norm(classes).replace(/(?:^|[\s_-])(twitch|youtube|kick|facebook|fb[ _-]?gaming)(?=$|[\s_-])/g,' ');
+      return getAction(cleaned);
+    }
+    const tagAction=getAction(norm(rawTag));
+    const action=tagAction.id==='generic'?actionFromEventClass(classStr):tagAction;
+    li.style.setProperty('--accent',COLORS[platform]||COLORS.unknown);
+    tag.textContent=translate(rawTag,action);
+    tag.dataset.neonOutput=tag.textContent;
+    let badge=body.querySelector('.neon-platform');
+    if(!badge){badge=document.createElement('span');badge.className='neon-platform';body.appendChild(badge);}
+    badge.className='neon-platform'+(platform==='unknown'?' neon-platform-unknown':'');
+    const names={twitch:'Twitch',youtube:'YouTube',kick:'Kick',facebook:'Facebook',unknown:'EVENTO'};
+    badge.innerHTML=(PLATFORM_ICONS[platform]?svg(PLATFORM_ICONS[platform],true):'')+'<span>'+names[platform]+'</span>';
+    let icon=body.querySelector('.neon-action-icon');
+    if(!icon){icon=document.createElement('span');icon.className='neon-action-icon';body.appendChild(icon);}
+    icon.innerHTML=svg(ICONS[action.id]);
+    icon.setAttribute('aria-label',action.label);
+    li.dataset.neonReady='1';
+    li.dataset.neonSignature=signature;
+    li.dataset.neonPlatform=platform;
+    li.dataset.neonAction=action.id;
+  }
+  function update(){document.querySelectorAll(ROOT+' li').forEach(decorate);}
+  let pending=false;
+  function schedule(){if(pending)return;pending=true;requestAnimationFrame(function(){pending=false;update();});}
+  const observer=new MutationObserver(function(records){
+    if(records.some(function(record){
+      if(record.type==='childList') return true;
+      if(record.type==='characterData') {
+        const parent=record.target.parentElement;
+        return !!(parent && parent.closest('.widget-EventList .tag, .widget-EventList .message'));
+      }
+      return false;
+    })) schedule();
+  });
+  function start(){
+    update();
+    observer.observe(document.documentElement,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+  document.addEventListener('onLoad',schedule);
+  document.addEventListener('onEventReceived',schedule);
+})();

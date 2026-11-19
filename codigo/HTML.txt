@@ -1,0 +1,10 @@
+<!-- Streamlabs > Lista de Eventos > HTML personalizado. Preserve os tokens nativos. -->
+<script type="text/template" id="eventlist_item">
+  <li class="{eventType}">
+    <div class="background"></div>
+    <div class="event-content">
+      <span class="tag">{tag}</span>
+      <span class="message">{from}</span>
+    </div>
+  </li>
+</script>

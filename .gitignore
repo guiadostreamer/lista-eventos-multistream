@@ -1,0 +1,9 @@
+# Arquivos locais e dados privados
+.env
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+node_modules/
+# Nunca adicionar URL privada do Streamlabs ou segredos de transmissão
+secrets/
