@@ -2,7 +2,7 @@
 
 Widget visual para a **Lista de Eventos nativa do Streamlabs**, com barras compactas de vidro escuro, bordas neon, ícones de ações, identificação de plataformas quando possível e rótulos em português brasileiro. Pensado para uso em lives multistream.
 
-![Captura do widget no Streamlabs](imagens/widget-streamlabs.png)
+![Lista de Eventos Neon v1.0 em funcionamento: Bits da Twitch, presente de membro do YouTube, Kicks da Kick, Super Sticker e seguidores](imagens/widget-streamlabs.png)
 
 > **Status:** o visual e algumas classificações de eventos foram conferidos em capturas de teste. A compatibilidade com todos os eventos reais ainda depende da disponibilidade, configuração e dados efetivamente entregues pelo Streamlabs. Projeto independente, não oficial.
 
@@ -52,7 +52,7 @@ A ação é determinada pelo rótulo do evento; o nome da plataforma (`Kick`) n�
 
 ## Testes e limitações
 
-- ✅ Visual conferido em capturas de teste e identificação de inscrições YouTube e Kicks Kick demonstrada.
+- ✅ Captura atualizada com eventos exibidos de Twitch, YouTube e Kick; inclui Bits, presente, Kicks, Super Sticker, reinscrição e seguidor.
 - ✅ Testes locais anteriores de classificação e ausência de erros no ambiente simulado (não equivalem a teste de produção de todas as plataformas).
 - ⏳ Validação real completa ainda pendente, especialmente **seguidores e raids da Kick** e demais interações de plataformas.
 - ⚠️ Se o template não trouxer origem suficiente, o rótulo genérico **EVENTO** é intencional.
